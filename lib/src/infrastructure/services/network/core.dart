@@ -3,10 +3,11 @@ import 'dart:async';
 
 // Flutter imports:
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 // Project imports:
-import '../../../../di.dart';
 import '../../utils/helpers.dart';
+import 'connection_service.dart';
 
 abstract interface class RestartableStateInterface {
   Future<void> loadState();
@@ -27,19 +28,19 @@ mixin ConnectionAwareMixin<T extends StatefulWidget> on State<T> {
     hasConnection = initialConnectionState;
     if (!hasConnection) {
       Future.delayed(
-          const Duration(milliseconds: 100),
-          () => ScaffoldMessenger.of(context)
-              .showSnackBar(internetSnackBar(context)));
+        const Duration(milliseconds: 100),
+        () => Get.showSnackbar(internetSnackBar),
+      );
     }
     _subscription = onConnectivityChanged.listen(_onChangeConnection);
   }
 
   void _onChangeConnection(bool result) {
     if (hasConnection != result && !result) {
-      ScaffoldMessenger.of(context).showSnackBar(internetSnackBar(context));
+      Get.showSnackbar(internetSnackBar);
     }
     if (result) {
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      Get.closeCurrentSnackbar();
     }
     hasConnection = result;
     onConnectionStateChange();
@@ -56,10 +57,11 @@ mixin DefaultConnectionAwareStateMixin<T extends StatefulWidget>
     on ConnectionAwareMixin<T> implements RestartableStateInterface {
   @override
   Stream<bool> get onConnectivityChanged =>
-      di.connectivityService.onConnectivityChanged;
+      Get.find<ConnectivityService>().onConnectivityChanged;
 
   @override
-  bool get initialConnectionState => di.connectivityService.hasActiveConnection;
+  bool get initialConnectionState =>
+      Get.find<ConnectivityService>().hasActiveConnection;
 
   @override
   void initState() {

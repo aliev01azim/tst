@@ -12,18 +12,19 @@
 
 └── 📁lib
 
-    ── 📁di.dart
+    ── 📁di.dart ### DI через getx 
     ── 📁main.dart
     ── 📁src
         └── 📁common  # Общие виджеты/модельки для всех модулей
+            └── 📁apis # retrofit апишки 
             └── 📁models
             └── 📁widgets
         └── 📁infrastructure # Инфраструктура приложения
-            └── 📁routes # Навигация
+            └── 📁routes ### Навигация через getx
             └── 📁services # Интернет,сокеты,сервисы бд...
-            └── 📁statics  # Константы,тема,стили...
+            └── 📁statics  # Константы,тема,стили... ### bindings
             └── 📁utils # Exceptions,Extensions,helpers...
-        └── 📁localization # Локализация
+        └── 📁localization ### Локализация через getx
         └── 📁modules # МОДУЛИ: 
             └── 📁auth 
                 └── 📁data
@@ -35,8 +36,7 @@
                     └── 📁usecases
                 └── 📁presentation
                     └── 📁screens
-                        └── 📁state_managers #Блок,Риверпод,Гетх...
-                    └── 📁widgets # Виджеты относящиеся только к ДАННОМУ модулю 
+                        └── 📁state_managers ### Getx controller
             └── 📁home
                 └── 📁data
                 └── 📁domain
@@ -48,12 +48,13 @@
 
 - Модульнная,чистая архитектура
 - Каждый модуль разделен на 3 слоя,которые общаются меж собой через абстракции
-- di - кастомный di_container (не сервис локатор)
-- Навигация - auto_route
-- HTTP реквесты - dio
+- di - getPut,bindings
+- Навигация - getPages
+- HTTP реквесты - dio + retrofit
 - Реализован lazy load + refresh
-- Стейтменеджер - flutter_bloc + freezed
+- Стейтменеджер - getx
+- Entity,Dto - freezed 
 - Кэширование - Hive для больших данных. 
   flutter_secure_storage - для токена(более безопасный)
-- Локализация - l10n
-- Entity,Dto,auto_route - работают в связке с кодогенерацией
+- Локализация - getx
+

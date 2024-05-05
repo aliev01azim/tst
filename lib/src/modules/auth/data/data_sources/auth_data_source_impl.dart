@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 
 // Project imports:
 
+import '../../../../common/apis/apis.dart';
 import '../../domain/entities/token.dart';
 import '../dto/user_dto.dart';
 import '../../../../infrastructure/services/flutter_secure_storage.dart';
@@ -11,8 +12,8 @@ import '../../../../infrastructure/utils/exceptions.dart';
 import 'auth_data_source.dart';
 
 class AuthDataSourceImpl implements AuthDataSource {
-  final Dio dio;
-  AuthDataSourceImpl(this.dio);
+  final RestClient client;
+  AuthDataSourceImpl(this.client);
 
   @override
   Future<Either<LoginException, UserDTO>> loginUser(
@@ -50,16 +51,11 @@ class AuthDataSourceImpl implements AuthDataSource {
   Future<Either<RefreshException, AuthToken>> refreshToken(
       String refresh) async {
     try {
-      final response =
-          await dio.post('/token/refresh', data: {'refresh': refresh});
-      if (response.statusCode == 200) {
-        return const Right(AuthToken(token: 'access', refresh: 'refresh'));
-      }
+      await client.refreshToken({'refresh': refresh});
+      return const Right(AuthToken(token: 'access', refresh: 'refresh'));
     } on DioException catch (e) {
       return Left(RefreshException(
           e.message ?? 'На сервере ведутся работы,перезайдите позже'));
     }
-    return Left(
-        RefreshException('На сервере ведутся работы,перезайдите позже'));
   }
 }

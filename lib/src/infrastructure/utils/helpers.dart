@@ -2,18 +2,25 @@
 //могут использоваться в различных частях приложения
 
 // Package imports:
+import 'package:get/get.dart';
+
 import '../statics/consts.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 final logger = Logger(
   printer: PrettyPrinter(methodCount: 5, lineLength: 200),
 );
+final internetSnackBar = GetSnackBar(
+  messageText: Center(
+    child: Text(
+      'no_internet_connection'.tr,
+      style: const TextStyle(color: Colors.white),
+    ),
+  ),
+  backgroundColor: AppColors.red,
+  isDismissible: true,
+  snackStyle: SnackStyle.GROUNDED,
+  duration: const Duration(minutes: 60),
+);
 
-internetSnackBar(BuildContext context) => SnackBar(
-      content: Center(child: Text(AppLocalizations.of(context)!.no_internet_connection,style: const TextStyle(color: Colors.white),)),
-      backgroundColor: AppColors.red,
-      behavior: SnackBarBehavior.fixed,
-      duration: const Duration(minutes: 60),
-    );

@@ -1,6 +1,9 @@
 // Package imports:
 import 'dart:math';
 
+import 'package:get/get.dart';
+
+import '../../../../common/apis/apis.dart';
 import '../../../../infrastructure/services/hive_service.dart';
 import '../../../../infrastructure/statics/consts.dart';
 import 'package:dartz/dartz.dart';
@@ -13,8 +16,8 @@ import '../../../../infrastructure/utils/exceptions.dart';
 import 'todos_data_source.dart';
 
 class TodosDataSourceImpl implements TodosDataSource {
-  final Dio dio;
-  TodosDataSourceImpl(this.dio);
+  final RestClient client;
+  TodosDataSourceImpl(this.client);
 
   @override
   Future<Either<TodosException, LazyLoadResponse<TodoDTO>>> fetchTodos(
@@ -31,11 +34,8 @@ class TodosDataSourceImpl implements TodosDataSource {
       }
 
       // Если данные отсутствуют в кэше, выполняем запрос
-      final response = await dio.get(
-        'todos',
-        queryParameters: {'userId': start},
-      );
-      var json = (response.data as List);
+      final response = await client.getTodos({'userId': start});
+      var json = (response as List);
       final List<TodoDTO> todos = json
           .map((item) => TodoDTO.fromJson(item as Map<String, dynamic>))
           .toList();
@@ -49,7 +49,6 @@ class TodosDataSourceImpl implements TodosDataSource {
       // final int currentPage = (start ~/ limit) + 1;
 
       return Right(LazyLoadResponse<TodoDTO>(
-        statusCode: response.statusCode!,
         data: todos,
       ));
     } on DioException catch (error) {
@@ -77,8 +76,8 @@ class TodosDataSourceImpl implements TodosDataSource {
         "completed": completed
       };
       await Future.delayed(const Duration(seconds: 1));
-      await HiveService.putItem<Map<String, dynamic>>(
-        item: item,
+      await HiveService.putItem<List>(
+        item: [item],
         boxEnum: Boxes.todos,
         key: randomNumber,
       );
@@ -93,12 +92,27 @@ class TodosDataSourceImpl implements TodosDataSource {
       {required TodoDTO item}) async {
     try {
       await Future.delayed(const Duration(seconds: 1));
-      return Right(await HiveService.putItem<Map<String, dynamic>>(
-        item: item.toJson(),
+      final json = await HiveService.getItem<List?>(
         boxEnum: Boxes.todos,
         key: item.userId,
-      ));
+      );
+
+      if (json != null && json.isNotEmpty) {
+        final editedIndex =
+            json.indexWhere((element) => element['id'] == item.id);
+        if (editedIndex != -1) {
+          final newJson = [...json];
+          newJson[editedIndex] = item.toJson();
+          await HiveService.putItem<List>(
+            item: newJson,
+            boxEnum: Boxes.todos,
+            key: item.userId,
+          );
+        }
+      }
+      return Right(print('successed'));
     } catch (e) {
+      print(e);
       return Left(TodoEditException(error: 'smthng'));
     }
   }

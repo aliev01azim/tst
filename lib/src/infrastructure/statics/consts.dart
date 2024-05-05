@@ -2,10 +2,10 @@
 import 'package:flutter/material.dart';
 
 // Package imports:
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-const baseUrl = 'https://jsonplaceholder.typicode.com/';
+const baseUrl = 'https://jsonplaceholder.typicode.com';
 
 class Images {}
 
@@ -23,18 +23,21 @@ enum TokenType {
   access,
   refresh,
 } //используется в flutter_secure_storage для более безопасного хранения
-
+class GetPages {
+  static const home = '/';
+  static const auth = '/login';
+  static const todoDetails = '/todo-details';
+  static const notFound = '/notfound';
+} 
 const supportedLocales = [
-  Locale('en', ''),
-  Locale('ru', ''),
+  Locale('en', 'EN'),
+  Locale('ru', 'RU'),
 ];
 
 const localizationsDelegates = [
-  AppLocalizations.delegate,
   GlobalMaterialLocalizations.delegate,
   GlobalWidgetsLocalizations.delegate,
   GlobalCupertinoLocalizations.delegate,
 ];
-const restorationScopeId = 'restorationIdAfterPhoneRotate'; //For example)
 
 

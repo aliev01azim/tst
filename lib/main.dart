@@ -16,7 +16,7 @@ void main() async {
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
     await HiveService.init();
-    await di.initDependencies();
+    await initDependencies();
     runApp(const App());
   }, (exc, stackTrace) {
     logger.e(exc, stackTrace: stackTrace);

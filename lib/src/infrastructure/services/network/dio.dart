@@ -25,11 +25,7 @@ class DioConfig {
     ));
   }
 
-  final dio = Dio(BaseOptions(baseUrl: baseUrl));
-
-  void setBaseUrl(String baseUrl) {
-    dio.options.baseUrl = baseUrl;
-  }
+  final dio = Dio();
 
   void addLoggingInterceptor() {
     dio.interceptors

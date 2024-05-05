@@ -2,30 +2,49 @@
 import 'package:flutter/material.dart';
 
 // Package imports:
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:get/get.dart';
 
 // Project imports:
-import '../di.dart';
+import 'common/widgets/unfocus.dart';
+import 'infrastructure/routes/routes.dart';
+import 'infrastructure/services/network/core.dart';
+import 'infrastructure/statics/bindings.dart';
 import 'infrastructure/statics/consts.dart';
 import 'infrastructure/statics/theme.dart';
+import 'localization/translations.dart';
+import 'modules/auth/domain/usecases/token_usecase.dart';
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
   const App({
     super.key,
   });
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp.router(
+  State<App> createState() => _AppState();
+}
+
+class _AppState extends State<App>
+    with ConnectionAwareMixin<App>, DefaultConnectionAwareStateMixin<App>
+    implements RestartableStateInterface {
+  @override
+  Widget buildPage(BuildContext context) {
+    return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: MyAppTheme.darkTheme,
+      initialRoute: Get.find<TokenUseCase>().isInitiallyAuthed
+          ? GetPages.home
+          : GetPages.auth,
+      builder: (context, child) => Unfocus(child: child),
+      initialBinding: AuthBinding(),
+      unknownRoute: Get.find<AppRouter>().unknowRoute,
+      getPages: Get.find<AppRouter>().getPages,
       darkTheme: MyAppTheme.darkTheme,
-      restorationScopeId: restorationScopeId,
       localizationsDelegates: localizationsDelegates,
       supportedLocales: supportedLocales,
-      routerConfig: di.appRouter.config(),
-      onGenerateTitle: (BuildContext context) =>
-          AppLocalizations.of(context)!.appTitle,
-      debugShowCheckedModeBanner: false,
+      fallbackLocale: Get.deviceLocale,
+      translations: AppTranslations(),
+      locale: getLanguageOfKey('ru'), //prefs.getString('language')
+      onGenerateTitle: (BuildContext context) => 'appTitle'.tr,
     );
   }
 }

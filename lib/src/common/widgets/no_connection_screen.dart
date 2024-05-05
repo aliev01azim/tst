@@ -1,7 +1,7 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:get/get.dart';
 
 // Project imports:
 import '../../infrastructure/statics/styles.dart';
@@ -20,7 +20,7 @@ class NoConnectionScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(AppLocalizations.of(context)!.no_internet_connection),
+              Text('no_internet_connection'.tr),
               Text(
                 '- _ -',
                 style: TextStyles.textTitle(fontSize: 100),

@@ -1,7 +1,9 @@
 // Package imports:
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:get/get.dart';
 
 // Project imports:
+import 'src/common/apis/apis.dart';
 import 'src/infrastructure/routes/routes.dart';
 import 'src/infrastructure/services/network/connection_service.dart';
 import 'src/infrastructure/services/network/dio.dart';
@@ -13,44 +15,29 @@ import 'src/modules/home/data/data_sources/todos_data_source_impl.dart';
 import 'src/modules/home/data/repositories/todos_repository_impl.dart';
 import 'src/modules/home/domain/usecases/todos_usecase.dart';
 
-final di = DIContainer();
+Future<void> initDependencies() async {
+  final connectivityService = await Get.putAsync<ConnectivityService>(
+      () async => await ConnectivityService(Connectivity()).init(),
+      permanent: true);
+  final _dioConfig = Get.put<DioConfig>(DioConfig());
+  final restClient=Get.put<RestClient>(RestClient(_dioConfig.dio));
+  final authDataSourceImpl =
+      Get.put<AuthDataSourceImpl>(AuthDataSourceImpl(restClient));
+  final authRepositoryImpl =
+      Get.put<AuthRepositoryImpl>(AuthRepositoryImpl(authDataSourceImpl));
+  final authUseCase = Get.put<AuthUseCase>(AuthUseCase(authRepositoryImpl));
+  final todosDataSourceImpl =
+      Get.put<TodosDataSourceImpl>(TodosDataSourceImpl(restClient));
+  final todosRepositoryImpl =
+      Get.put<TodosRepositoryImpl>(TodosRepositoryImpl(todosDataSourceImpl));
+  Get.put<TodosUseCase>(TodosUseCase(todosRepositoryImpl));
+  final tokenUseCase = Get.put<TokenUseCase>(TokenUseCase(authRepositoryImpl));
+  Get.put<AppRouter>(AppRouter());
 
-class DIContainer {
-  Future<void> initDependencies() async {
-    connectivityService = await ConnectivityService(Connectivity()).init();
-    dioConfig = DioConfig();
-    _authDataSource = AuthDataSourceImpl(dioConfig.dio);
-    _authRepository = AuthRepositoryImpl(_authDataSource);
-    authUseCase = AuthUseCase(_authRepository);
-    _postsDataSourceImpl = TodosDataSourceImpl(dioConfig.dio);
-    _postsRepository = TodosRepositoryImpl(_postsDataSourceImpl);
-    postsUseCase = TodosUseCase(_postsRepository);
-    tokenUseCase = TokenUseCase(_authRepository);
-
-    appRouter = AppRouter();
-
-    //вызывается в конце (чтобы сначала проинициализировались необходимые зависимости)
-    dioConfig.setupDio(
-      connectivityService: connectivityService,
-      tokenUseCase: tokenUseCase,
-      authUseCase: authUseCase,
-    );
-  }
-
-  //  dio + interceptor + проверка на интернет
-  late final ConnectivityService connectivityService;
-  late final DioConfig dioConfig;
-
-  //appRouter для использования в app.dart и в interceptor при 401
-  late final AppRouter appRouter;
-
-
-  // остальные зависимости
-  late final AuthDataSourceImpl _authDataSource;
-  late final AuthRepositoryImpl _authRepository;
-  late final AuthUseCase authUseCase;
-  late final TodosDataSourceImpl _postsDataSourceImpl;
-  late final TodosRepositoryImpl _postsRepository;
-  late final TodosUseCase postsUseCase;
-  late final TokenUseCase tokenUseCase;
+  _dioConfig.setupDio(
+    connectivityService: connectivityService,
+    tokenUseCase: tokenUseCase,
+    authUseCase: authUseCase,
+  );
+  await tokenUseCase.getAccessToken();
 }

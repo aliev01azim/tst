@@ -1,16 +1,14 @@
+import 'package:get/get.dart';
+
 import '../../domain/entities/todo.dart';
 import 'package:flutter/material.dart';
-import 'package:auto_route/auto_route.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../../common/widgets/mini_btn.dart';
 import '../../../../infrastructure/statics/consts.dart';
 import '../../../../infrastructure/statics/styles.dart';
 import '../../../../common/widgets/text_field.dart';
-import 'todos_bloc/todos_bloc.dart';
+import 'todos_controller.dart';
 
-@RoutePage()
 class TodoEditAddScreen extends StatefulWidget {
   const TodoEditAddScreen({super.key, this.item});
   final TodoModel? item;
@@ -19,6 +17,7 @@ class TodoEditAddScreen extends StatefulWidget {
 }
 
 class _TodoEditAddScreenState extends State<TodoEditAddScreen> {
+  final _todosController = Get.find<TodosController>();
   final _titleController = TextEditingController();
   final formKey = GlobalKey<FormState>();
   final isCompleted = ValueNotifier<bool>(false);
@@ -35,9 +34,7 @@ class _TodoEditAddScreenState extends State<TodoEditAddScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.item != null
-            ? AppLocalizations.of(context)!.edit
-            : AppLocalizations.of(context)!.create),
+        title: Text(widget.item != null ? 'edit'.tr : 'create'.tr),
       ),
       body: SafeArea(
         child: Padding(
@@ -49,7 +46,7 @@ class _TodoEditAddScreenState extends State<TodoEditAddScreen> {
               children: [
                 const SizedBox(height: 24),
                 Text(
-                  AppLocalizations.of(context)!.fill,
+                  'fill'.tr,
                   style: TextStyles.textButton(color: AppColors.focusedField),
                 ),
                 const SizedBox(height: 16),
@@ -58,7 +55,7 @@ class _TodoEditAddScreenState extends State<TodoEditAddScreen> {
                   keyboardType: TextInputType.text,
                   validator: (p02) {
                     if (p02 != null && p02.trim().isEmpty) {
-                      return AppLocalizations.of(context)!.fill;
+                      return 'fill'.tr;
                     }
                     return null;
                   },
@@ -68,7 +65,7 @@ class _TodoEditAddScreenState extends State<TodoEditAddScreen> {
                 Row(
                   children: [
                     Text(
-                      AppLocalizations.of(context)!.status,
+                      'status'.tr,
                       style:
                           TextStyles.textButton(color: AppColors.focusedField),
                     ),
@@ -88,36 +85,26 @@ class _TodoEditAddScreenState extends State<TodoEditAddScreen> {
                 const Spacer(),
                 Align(
                   alignment: Alignment.center,
-                  child: BlocConsumer<TodosBloc, TodosState>(
-                    listener: (context, state) {
-                      context.maybePop();
-                    },
-                    listenWhen: (previous, current) =>
-                        previous.todoIsLoading && !current.todoIsLoading,
-                    builder: (context, state) {
+                  child: GetBuilder<TodosController>(
+                    builder: (state) {
                       return MiniBtn(
                         isLoading: state.todoIsLoading,
                         onTap: () async {
                           if (formKey.currentState?.validate() == true) {
                             if (widget.item != null) {
-                              context.read<TodosBloc>().add(
-                                    TodosEvent.editTodo(
-                                      id: widget.item!.id,
-                                      completed: isCompleted.value,
-                                      title: _titleController.text,
-                                    ),
-                                  );
+                              await _todosController.editTodo(
+                                  id: widget.item!.id,
+                                  completed: isCompleted.value,
+                                  title: _titleController.text);
                             } else {
-                              context.read<TodosBloc>().add(
-                                    TodosEvent.addTodo(
-                                      completed: isCompleted.value,
-                                      title: _titleController.text,
-                                    ),
-                                  );
+                              await _todosController.addTodo(
+                                  completed: isCompleted.value,
+                                  title: _titleController.text);
                             }
                           }
+                          Get.back();
                         },
-                        text: AppLocalizations.of(context)!.finish,
+                        text: 'finish'.tr,
                       );
                     },
                   ),
