@@ -52,12 +52,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 predicate: (route) => route is HomeModuleRoute,
               );
             }
-            // if (state.error != null) {
-            //   Flushbar(
-            //     title: state.error,
-            //     duration: const Duration(seconds: 2),
-            //   ).show(context);
-            // }
           },
           listenWhen: (p, c) => c.user != null || c.error != null,
           child: Padding(

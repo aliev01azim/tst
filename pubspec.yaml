@@ -10,7 +10,6 @@ environment:
   sdk: '>=3.1.5 <4.0.0'
 
 dependencies:
-  another_flushbar: ^1.12.30
   auto_route: ^8.0.0
   bloc_concurrency: ^0.2.5
   connectivity_plus: ^6.0.1
