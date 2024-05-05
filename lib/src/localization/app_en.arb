@@ -1,0 +1,16 @@
+{
+  "appTitle": "Code demonstration app",
+  "login": "Log in",
+  "next": "Next",
+  "finish": "Finish",
+  "password": "Password",
+  "create": "Create",
+  "edit": "Edit",
+  "fill": "Fill this field",
+  "status": "Status",
+  "enter_your_email_correctly": "Enter your email correctly",
+  "enter_at_least_characters": "Enter at least 8 characters",
+  "enter_your_email": "Enter your email",
+  "no_internet_connection": "No internet connection...",
+  "enter_your_password": "Enter your password"
+}

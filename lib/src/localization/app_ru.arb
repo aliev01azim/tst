@@ -1,0 +1,16 @@
+{
+  "appTitle": "Кододемонстрация",
+  "login": "Логин",
+  "next": "Продолжить",
+  "password": "Пароль",
+  "finish": "Завершить",
+  "create": "Создать",
+  "fill": "Заполните это поле",
+  "status": "Статус",
+  "edit": "Редактировать",
+  "enter_your_email_correctly": "Введите почту корректно",
+  "enter_at_least_characters": "Введите минимум 8 символов",
+  "enter_your_email": "Введите свою почту",
+  "no_internet_connection": "Отсутствует интернет соединение...",
+  "enter_your_password": "Введите пароль"
+}
