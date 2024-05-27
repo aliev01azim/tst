@@ -93,11 +93,25 @@ class TodosDataSourceImpl implements TodosDataSource {
       {required TodoDTO item}) async {
     try {
       await Future.delayed(const Duration(seconds: 1));
-      return Right(await HiveService.putItem<Map<String, dynamic>>(
-        item: item.toJson(),
+      final json = await HiveService.getItem<List?>(
         boxEnum: Boxes.todos,
         key: item.userId,
-      ));
+      );
+
+      if (json != null && json.isNotEmpty) {
+        final editedIndex =
+            json.indexWhere((element) => element['id'] == item.id);
+        if (editedIndex != -1) {
+          final newJson = [...json];
+          newJson[editedIndex] = item.toJson();
+          await HiveService.putItem<List>(
+            item: newJson,
+            boxEnum: Boxes.todos,
+            key: item.userId,
+          );
+        }
+      }
+      return Right(print('successed'));
     } catch (e) {
       return Left(TodoEditException(error: 'smthng'));
     }

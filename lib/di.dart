@@ -5,11 +5,15 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'src/infrastructure/routes/routes.dart';
 import 'src/infrastructure/services/network/connection_service.dart';
 import 'src/infrastructure/services/network/dio.dart';
+import 'src/modules/auth/data/data_sources/auth_data_source.dart';
 import 'src/modules/auth/data/data_sources/auth_data_source_impl.dart';
+import 'src/modules/auth/data/repositories/auth_repository.dart';
 import 'src/modules/auth/data/repositories/auth_repository_impl.dart';
 import 'src/modules/auth/domain/usecases/auth_usecase.dart';
 import 'src/modules/auth/domain/usecases/token_usecase.dart';
+import 'src/modules/home/data/data_sources/todos_data_source.dart';
 import 'src/modules/home/data/data_sources/todos_data_source_impl.dart';
+import 'src/modules/home/data/repositories/todos_repository.dart';
 import 'src/modules/home/data/repositories/todos_repository_impl.dart';
 import 'src/modules/home/domain/usecases/todos_usecase.dart';
 
@@ -46,11 +50,11 @@ class DIContainer {
 
 
   // остальные зависимости
-  late final AuthDataSourceImpl _authDataSource;
-  late final AuthRepositoryImpl _authRepository;
+  late final AuthDataSource _authDataSource;
+  late final AuthRepository _authRepository;
   late final AuthUseCase authUseCase;
-  late final TodosDataSourceImpl _postsDataSourceImpl;
-  late final TodosRepositoryImpl _postsRepository;
+  late final TodosDataSource _postsDataSourceImpl;
+  late final TodosRepository _postsRepository;
   late final TodosUseCase postsUseCase;
   late final TokenUseCase tokenUseCase;
 }
